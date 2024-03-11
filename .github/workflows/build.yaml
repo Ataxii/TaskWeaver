@@ -1,0 +1,18 @@
+jobs:
+  build:
+    steps:
+      - uses: actions/checkout@...
+      - uses: actions/setup-python@...
+        with:
+          python-version: 3.x
+      - run: |
+          # Install 'build' and create sdist & wheel
+          python -m pip install build
+          python -m build
+
+          # Gather hashes of all files
+          cd dist && echo "hashes=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifacts@...
+        with:
+          path: ./dist
+          
