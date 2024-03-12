@@ -15,4 +15,37 @@ jobs:
       - uses: actions/upload-artifacts@...
         with:
           path: ./dist
-          
+  provenance:
+    needs: [build]
+    uses: slsa-framework/slsa-github-builder/.github/workflows/generator_generic_slsa3.yml@v1.5.0
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    with:
+      subject-base64: ${{ steps.build.outputs.hashes }}
+      upload-assets: true
+ publish:
+   needs: ["build", "provenance"]
+   permissions:
+     contents: write
+   runs-on: "ubuntu-latest"
+   steps:
+     # Download the built distributions
+     - uses: "actions/download-artifact@..."
+       with:
+         name: "dist"
+         path: "dist/"
+    
+     # Upload distributions to the GitHub Release
+     - env:
+         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+       run: |
+         gh release upload ${{ github.ref_name }} \
+           dist/* --repo ${{ github.repository }}
+    
+     # Publish distributions to PyPI
+     #- uses: "pypa/gh-action-pypi-publish@..."
+     #  with:
+     #    user: __token__
+     #    password: ${{ secrets.PYPI_TOKEN }}
