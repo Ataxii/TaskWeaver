@@ -33,7 +33,7 @@ jobs:
       id-token: write
       contents: write
     with:
-      subject-base64: ${{ steps.build.outputs.hashes }}
+      subject-base64: ${{ needs.release.outputs.hashes }}
       upload-assets: true
       draft-release: true
   
