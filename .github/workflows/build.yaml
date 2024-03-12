@@ -27,7 +27,7 @@ jobs:
           path: ./dist
   provenance:
     needs: [build]
-    uses: slsa-framework/slsa-github-builder/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
     permissions:
       actions: read
       id-token: write
@@ -35,6 +35,7 @@ jobs:
     with:
       subject-base64: ${{ steps.build.outputs.hashes }}
       upload-assets: true
+      draft-release: true
   
   publish:
     needs: ["build", "provenance"]
