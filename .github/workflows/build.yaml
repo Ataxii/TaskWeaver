@@ -25,24 +25,25 @@ jobs:
     with:
       subject-base64: ${{ steps.build.outputs.hashes }}
       upload-assets: true
- publish:
-   needs: ["build", "provenance"]
-   permissions:
-     contents: write
-   runs-on: "ubuntu-latest"
-   steps:
+  
+  publish:
+    needs: ["build", "provenance"]
+    permissions:
+      contents: write
+    runs-on: "ubuntu-latest"
+    steps:
      # Download the built distributions
-     - uses: "actions/download-artifact@..."
-       with:
-         name: "dist"
-         path: "dist/"
+      - uses: "actions/download-artifact@..."
+        with:
+          name: "dist"
+          path: "dist/"
     
      # Upload distributions to the GitHub Release
-     - env:
-         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-       run: |
-         gh release upload ${{ github.ref_name }} \
-           dist/* --repo ${{ github.repository }}
+      - env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          gh release upload ${{ github.ref_name }} \
+          dist/* --repo ${{ github.repository }}
     
      # Publish distributions to PyPI
      #- uses: "pypa/gh-action-pypi-publish@..."
