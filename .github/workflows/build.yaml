@@ -35,7 +35,7 @@ jobs:
       id-token: write
       contents: write
     with:
-      subject-base64: ${{ needs.build.outputs.hashes }}
+      base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true
       draft-release: true
   
