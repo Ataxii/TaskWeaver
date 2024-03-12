@@ -450,6 +450,7 @@ async def main(message: cl.Message):
                 f"{img_prefix}[{file_name}]({file_path})",
                 file_name,
             )
+
         elements = file_display(files, session_cwd_path)
         await cl.Message(
             author="TaskWeaver",
