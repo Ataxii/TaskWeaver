@@ -1,5 +1,15 @@
+name: Build for slsa
+on:
+  pull_request:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+      
 jobs:
   build:
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@...
       - uses: actions/setup-python@...
@@ -17,7 +27,7 @@ jobs:
           path: ./dist
   provenance:
     needs: [build]
-    uses: slsa-framework/slsa-github-builder/.github/workflows/generator_generic_slsa3.yml@v1.5.0
+    uses: slsa-framework/slsa-github-builder/.github/workflows/generator_generic_slsa3.yml@v1.9.0
     permissions:
       actions: read
       id-token: write
@@ -39,11 +49,11 @@ jobs:
           path: "dist/"
     
      # Upload distributions to the GitHub Release
-      - env:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        run: |
-          gh release upload ${{ github.ref_name }} \
-          dist/* --repo ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          run: |
+            gh release upload ${{ github.ref_name }} \
+            dist/* --repo ${{ github.repository }}
     
      # Publish distributions to PyPI
      #- uses: "pypa/gh-action-pypi-publish@..."
