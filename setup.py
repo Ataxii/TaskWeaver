@@ -2,7 +2,7 @@ import os
 import re
 
 import setuptools
-from scripts.get_package_version import get_package_version
+from scripts import get_package_version
 
 
 def update_version_file(version: str):
