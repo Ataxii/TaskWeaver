@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: "ubuntu-latest"
+    outputs:
+      hashes: ${{ steps.hash.outputs.hashes }}
     steps:
       - uses: actions/checkout@...
       - uses: actions/setup-python@...
@@ -33,7 +35,7 @@ jobs:
       id-token: write
       contents: write
     with:
-      subject-base64: ${{ needs.release.outputs.hashes }}
+      subject-base64: ${{ needs.build.outputs.hashes }}
       upload-assets: true
       draft-release: true
   
