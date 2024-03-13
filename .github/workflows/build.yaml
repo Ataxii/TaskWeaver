@@ -54,7 +54,7 @@ jobs:
      # Download the built distributions
       - uses: "actions/download-artifact@v4"
         with:
-          name: "dist"
+          path: "/dist"
       - name: Display structure of downloaded files
         run: ls -R
      # Upload distributions to the GitHub Release
