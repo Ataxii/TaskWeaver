@@ -33,6 +33,16 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           path: dist/
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          args: release --clean
   provenance:
     needs: [build]
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
@@ -57,12 +67,6 @@ jobs:
           path: "dist/"
       - name: Display structure of downloaded files
         run: ls -R
-     # Upload distributions to the GitHub Release
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          run: |
-            gh release upload ${{ github.ref_name }} \
-            dist/* --repo ${{ github.repository }}
     
      # Publish distributions to PyPI
      #- uses: "pypa/gh-action-pypi-publish@v4"
