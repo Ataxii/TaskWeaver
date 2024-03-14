@@ -2,10 +2,8 @@ name: Build for slsa
 on:
   pull_request:
   push:
-    branches:
-      - '*'
     tags:
-      - '*'
+      - 'v*'
       
 jobs:
   build:
