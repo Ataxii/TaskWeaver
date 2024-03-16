@@ -10,23 +10,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2  #get depo code
-        # SBOM generator 
-      - name: Generate Python SBOM
-        uses: CycloneDX/gh-python-generate-sbom@v2
-        with:
-          input: ./requirements.txt 
-          output: ./bom.json  # path output
-          format: json  # output format  (xml/json)
       
-      # SBOM generator 
+      # SBOM generator JSON
       - name: Generate Python SBOM
         uses: CycloneDX/gh-python-generate-sbom@v2
         with:
           input: ./requirements.txt
           output: ./generated_bom.json
-          format: json  # output format  (xml/json)
+          format: json  # output format  (json)
+      # SBOM generator XML
+      - name: Generate Python SBOM
+        uses: CycloneDX/gh-python-generate-sbom@v2
+        with:
+          input: ./requirements.txt
+          output: ./generated_bom.xml
+          format: json  # output format  (xml)
+          
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v2
         with:
           name: sbom
-          path: ./generated_bom.json
+          path: |
+            ./generated_bom.json
+            ./generated_bom.xml
