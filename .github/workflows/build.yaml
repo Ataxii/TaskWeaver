@@ -41,6 +41,13 @@ jobs:
           draft: false
           prerelease: false
           args: release --clean
+      # SBOM generator 
+      - name: Generate Python SBOM
+        uses: CycloneDX/gh-python-generate-sbom@v2
+        with:
+          input: ./requirements.txt
+          output: ./bom.json
+          format: json  # output format  (xml/json)
   provenance:
     needs: [build]
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
