@@ -23,5 +23,10 @@ jobs:
         uses: CycloneDX/gh-python-generate-sbom@v2
         with:
           input: ./requirements.txt
-          output: ./bom.json
+          output: ./generated_bom.json
           format: json  # output format  (xml/json)
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: sbom
+          path: ./generated_bom.json
