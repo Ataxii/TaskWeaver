@@ -1,8 +1,8 @@
 name: Generate SBOM
 
 on:
-  push:
-    
+  release:
+    types: [published]
 
 jobs:
   generate_sbom:
