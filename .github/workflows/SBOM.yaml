@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  #get depo code
+        uses: actions/checkout@v2
       
       # SBOM generator JSON
       - name: Generate Python SBOM
