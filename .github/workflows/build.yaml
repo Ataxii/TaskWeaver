@@ -1,9 +1,7 @@
 name: Build for slsa
 on:
-  pull_request:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
       
 jobs:
   build:
