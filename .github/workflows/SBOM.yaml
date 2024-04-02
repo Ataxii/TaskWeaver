@@ -17,7 +17,6 @@ jobs:
           input: ./requirements.txt
           output: ./generated_bom.json
           format: json  # output format  (json)
-      # SBOM generator XML
       - name: Generate Python SBOM
         uses: CycloneDX/gh-python-generate-sbom@v2
         with:
