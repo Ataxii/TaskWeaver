@@ -26,7 +26,6 @@ jobs:
           # Gather hashes of all files
           set -euo pipefail
           cd dist && echo "hashes=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
-          cd ..
       - uses: actions/upload-artifact@v4
         with:
           path: dist/
