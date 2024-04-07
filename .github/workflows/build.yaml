@@ -62,10 +62,19 @@ jobs:
       contents: write
     runs-on: "ubuntu-latest"
     steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+      - name: Generate list of files to upload
+        id: files
+        run: |
+          FILES=$(find dist/ -type f)
+          echo "filelist=$FILES" >> "$GITHUB_OUTPUT"
       - name: Release
         uses: softprops/action-gh-release@v2.0.4
         with:
-          files: dist/*
+          files: ${{ steps.files.outputs.filelist }}
       # Publish distributions to PyPI
       # - uses: "pypa/gh-action-pypi-publish@v4"
       #   with:
