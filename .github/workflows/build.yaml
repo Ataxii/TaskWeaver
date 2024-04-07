@@ -44,6 +44,11 @@ jobs:
         with:
           path: "dist/"
              # Publish distributions to PyPI
+  - env:
+      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    run: |
+      gh release upload ${{ github.ref_name }} \
+        dist/* --repo ${{ github.repository }}
      #- uses: "pypa/gh-action-pypi-publish@v4"
      #  with:
      #    user: __token__
