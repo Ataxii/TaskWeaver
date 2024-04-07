@@ -67,14 +67,15 @@ jobs:
         with:
           path: dist
       - name: Generate list of files to upload
-        id: files
+        id: filelist
         run: |
-          FILES=$(find dist/ -type f)
-          echo "filelist=$FILES" >> "$GITHUB_OUTPUT"
+          echo "list<<EOF" >> "$GITHUB_OUTPUT"
+          find dist/ -type f >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT" 
       - name: Release
         uses: softprops/action-gh-release@v2.0.4
         with:
-          files: ${{ steps.files.outputs.filelist }}
+          files: ${{ steps.filelist.outputs.list }}
       # Publish distributions to PyPI
       # - uses: "pypa/gh-action-pypi-publish@v4"
       #   with:
