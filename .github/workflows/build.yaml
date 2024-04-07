@@ -14,66 +14,48 @@ jobs:
         with:
           python-version: 3.x
       - name: Build Wheel and Generate checksum
-        id: hash
+        id: build
         run: |
           pip install build
           python -m pip install -r requirements.txt
           python -m build
+      - name: Generate Python SBOM
+        id: sbom-json
+        uses: CycloneDX/gh-python-generate-sbom@v2
+        with:
+          input: ./requirements.txt
+          output: dist/generated_bom.json
+          format: json  # output format  (json)
+      - name: Generate Python SBOM
+        id: sbom-xml
+        uses: CycloneDX/gh-python-generate-sbom@v2
+        with:
+          input: ./requirements.txt
+          output: dist/generated_bom.xml
+          format: json  # output format  (xml)
+      - name: Generate subject
+        id: hash
+        run: |
+          cd dist
+          HASHES=$(sha256sum * | base64 -w0)
+          echo "hashes=$HASHES" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         name: dist
         with:
           path: dist/
 
-  generate-sbom:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Generate Python SBOM
-        uses: CycloneDX/gh-python-generate-sbom@v2
-        with:
-          input: ./requirements.txt
-          output: ./generated_bom.json
-          format: json  # output format  (json)
-      - name: Generate Python SBOM
-        uses: CycloneDX/gh-python-generate-sbom@v2
-        with:
-          input: ./requirements.txt
-          output: ./generated_bom.xml
-          format: json  # output format  (xml)
-          
-      - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: sbom
-          path: |
-            ./generated_bom.json
-            ./generated_bom.xml
-
-  generate-hashes:
-    needs: [build, generate-sbom]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          path: dist/
-      - name: Generate hashes
-        id: hash
-        run: |
-          echo "hashes=$(find dist/ -type f -exec sha256sum {} \; | sed 's/ etc\// /g' | base64 -w0)" >> "$GITHUB_OUTPUT"
 
   provenance:
-    needs: [generate-hashes]
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    needs: [build]
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0
     permissions:
       actions: read
       id-token: write
       contents: write
     with:
-      base64-subjects: ${{ needs.generate-hashes.outputs.hashes }}
-  
+      base64-subjects: ${{ needs.build.outputs.hashes }}
+
+
   publish:
     needs: ["provenance"]
     permissions:
@@ -83,15 +65,15 @@ jobs:
       - uses: "actions/download-artifact@v4"
         with:
           path: "dist/"
-             # Publish distributions to PyPI
       - name: Release all artifacts
         run: |
           gh release upload ${{ github.ref_name }} \
             dist/* --repo ${{ github.repository }}
           env:
             GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        #- uses: "pypa/gh-action-pypi-publish@v4"
-        #  with:
-        #    user: __token__
-        #    password: ${{ secrets.PYPI_TOKEN }}
+      # Publish distributions to PyPI
+      # - uses: "pypa/gh-action-pypi-publish@v4"
+      #   with:
+      #    user: __token__
+      #    password: ${{ secrets.PYPI_TOKEN }}
     
