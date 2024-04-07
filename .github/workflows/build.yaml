@@ -2,7 +2,7 @@ name: Build for SLSA
 on:
   release:
     types: [published]
-      
+
 jobs:
   build:
     runs-on: "ubuntu-latest"
@@ -23,37 +23,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           path: dist/
-          
-  provenance:
-    needs: [build]
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
-    permissions:
-      actions: read
-      id-token: write
-      contents: write
-    with:
-      base64-subjects: ${{ needs.build.outputs.hashes }}
-  
-  publish:
-    needs: ["build", "provenance"]
-    permissions:
-      contents: write
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: "actions/download-artifact@v4"
-        with:
-          path: "dist/"
-             # Publish distributions to PyPI
-  - env:
-      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    run: |
-      gh release upload ${{ github.ref_name }} \
-        dist/* --repo ${{ github.repository }}
-     #- uses: "pypa/gh-action-pypi-publish@v4"
-     #  with:
-     #    user: __token__
-     #    password: ${{ secrets.PYPI_TOKEN }}
-        
   generate_sbom:
     runs-on: ubuntu-latest
     steps:
@@ -80,4 +49,34 @@ jobs:
           path: |
             ./generated_bom.json
             ./generated_bom.xml
+  provenance:
+    needs: [build]
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    with:
+      base64-subjects: ${{ needs.build.outputs.hashes }}
+  
+  publish:
+    needs: ["build", "provenance"]
+    permissions:
+      contents: write
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/download-artifact@v4"
+        with:
+          path: "dist/"
+             # Publish distributions to PyPI
+      - name: Release all artifacts
+        run: |
+          gh release upload ${{ github.ref_name }} \
+            dist/* --repo ${{ github.repository }}
+          env:
+            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        #- uses: "pypa/gh-action-pypi-publish@v4"
+        #  with:
+        #    user: __token__
+        #    password: ${{ secrets.PYPI_TOKEN }}
     
