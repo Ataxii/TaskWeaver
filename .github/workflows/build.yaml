@@ -19,15 +19,16 @@ jobs:
           pip install build
           python -m pip install -r requirements.txt
           python -m build
-          cd dist && echo "hashes=$(sha256sum | base64 -w0)" >> $GITHUB_OUTPUT
       - uses: actions/upload-artifact@v4
+        name: dist
         with:
           path: dist/
-  generate_sbom:
+
+  generate-sbom:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Generate Python SBOM
         uses: CycloneDX/gh-python-generate-sbom@v2
@@ -49,18 +50,32 @@ jobs:
           path: |
             ./generated_bom.json
             ./generated_bom.xml
+
+  generate-hashes:
+    needs: [build, generate-sbom]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+      - name: Generate hashes
+        id: hash
+        run: |
+          echo "hashes=$(find dist/ -type f -exec sha256sum {} \; | sed 's/ etc\// /g' | base64 -w0)" >> "$GITHUB_OUTPUT"
+
   provenance:
-    needs: [build]
+    needs: [generate-hashes]
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
     permissions:
       actions: read
       id-token: write
       contents: write
     with:
-      base64-subjects: ${{ needs.build.outputs.hashes }}
+      base64-subjects: ${{ needs.generate-hashes.outputs.hashes }}
   
   publish:
-    needs: ["build", "provenance"]
+    needs: ["provenance"]
     permissions:
       contents: write
     runs-on: "ubuntu-latest"
