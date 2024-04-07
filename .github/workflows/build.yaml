@@ -1,4 +1,4 @@
-name: Build for slsa
+name: Build for SLSA
 on:
   release:
     types: [published]
