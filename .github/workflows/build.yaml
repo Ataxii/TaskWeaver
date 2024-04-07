@@ -76,9 +76,5 @@ jobs:
         uses: softprops/action-gh-release@v2.0.4
         with:
           files: ${{ steps.filelist.outputs.list }}
-      # Publish distributions to PyPI
-      # - uses: "pypa/gh-action-pypi-publish@v4"
-      #   with:
-      #    user: __token__
-      #    password: ${{ secrets.PYPI_TOKEN }}
+
     
