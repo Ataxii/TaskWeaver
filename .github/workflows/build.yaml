@@ -33,7 +33,6 @@ jobs:
       contents: write
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
-      upload-assets: true
       draft-release: true
   
   publish:
