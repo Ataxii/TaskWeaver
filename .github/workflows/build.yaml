@@ -66,16 +66,6 @@ jobs:
         uses: softprops/action-gh-release@v2.0.4
         with:
           files: dist/*
-      # - uses: "actions/download-artifact@v4"
-      #   with:
-      #     path: "dist/"
-      # - name: Release all artifacts
-      #   env:
-      #     GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      #   run: |
-      #       gh release upload ${{ github.ref_name }} \
-      #         dist/* --repo ${{ github.repository }}
-
       # Publish distributions to PyPI
       # - uses: "pypa/gh-action-pypi-publish@v4"
       #   with:
