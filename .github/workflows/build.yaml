@@ -40,7 +40,7 @@ jobs:
           HASHES=$(sha256sum * | base64 -w0)
           echo "hashes=$HASHES" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
-        name: dist
+        name: release
         with:
           path: dist/
 
@@ -62,15 +62,20 @@ jobs:
       contents: write
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/download-artifact@v4"
+      - name: Release
+        uses: softprops/action-gh-release@v2.0.4
         with:
-          path: "dist/"
-      - name: Release all artifacts
-        run: |
-          gh release upload ${{ github.ref_name }} \
-            dist/* --repo ${{ github.repository }}
-          env:
-            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          files: dist/*
+      # - uses: "actions/download-artifact@v4"
+      #   with:
+      #     path: "dist/"
+      # - name: Release all artifacts
+      #   env:
+      #     GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      #   run: |
+      #       gh release upload ${{ github.ref_name }} \
+      #         dist/* --repo ${{ github.repository }}
+
       # Publish distributions to PyPI
       # - uses: "pypa/gh-action-pypi-publish@v4"
       #   with:
