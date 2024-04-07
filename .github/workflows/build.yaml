@@ -13,16 +13,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
-      - run: pip install build
-      - name: Generate checksum
+      - name: Build Wheel and Generate checksum
         id: hash
         run: |
-          # create sdist & wheel
+          pip install build
           python -m pip install -r requirements.txt
           python -m build
-
-          # Gather hashes of all files
-          cd dist && echo "hashes=$(sha256sum * | base64 -w0)" >> $GITHUB_OUTPUT
+          cd dist && echo "hashes=$(sha256sum | base64 -w0)" >> $GITHUB_OUTPUT
       - uses: actions/upload-artifact@v4
         with:
           path: dist/
